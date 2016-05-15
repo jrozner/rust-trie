@@ -3,14 +3,24 @@ use std::str::Chars;
 
 fn main() {
     let trie: &mut Trie = &mut Trie::new();
-    insert(trie, String::from("/usr/share"));
-    insert(trie, String::from("/etc"));
+    trie.insert(String::from("/usr/share"));
+    trie.insert(String::from("/etc"));
 
-    println!("{:?}", prefix(trie, String::from("/usr/share/dict/words")));
-    println!("{:?}", prefix(trie, String::from("doc")));
-    println!("{:?}", prefix(trie, String::from("/usr/sha")));
-    println!("{:?}", prefix(trie, String::from("/etc")));
-    println!("{:?}", prefix(trie, String::from("/etc/")));
+    println!("{:?}", trie.prefix(String::from("/usr/share/dict/words")));
+    println!("{:?}", trie.prefix(String::from("doc")));
+    println!("{:?}", trie.prefix(String::from("/usr/sha")));
+    println!("{:?}", trie.prefix(String::from("/usr/shat/stuff")));
+    println!("{:?}", trie.prefix(String::from("/etc")));
+    println!("{:?}", trie.prefix(String::from("/etc/")));
+
+    println!("");
+
+    println!("{:?}", trie.contains(String::from("/usr/share/dict/words")));
+    println!("{:?}", trie.contains(String::from("doc")));
+    println!("{:?}", trie.contains(String::from("/usr/share")));
+    println!("{:?}", trie.contains(String::from("/usr/shat/stuff")));
+    println!("{:?}", trie.contains(String::from("/etc")));
+    println!("{:?}", trie.contains(String::from("/etc/")));
 }
 
 pub struct Trie {
@@ -22,24 +32,28 @@ impl Trie {
     fn new() -> Trie {
         Trie{children: HashMap::new(), boundary: false}
     }
+
+    fn insert(&mut self, string: String) {
+        insert(self, string.chars())
+    }
+
+    fn prefix(&self, string: String) -> bool {
+        lookup(self, string.chars(), true)
+    }
+
+    fn contains(&self, string: String) -> bool {
+        lookup(self, string.chars(), false)
+    }
 }
 
-fn insert(trie: &mut Trie, string: String) {
-    _insert(trie, string.chars())
-}
-
-fn prefix(trie: &Trie, string: String) -> bool {
-    _prefix(trie, string.chars())
-}
-
-fn _insert(trie: &mut Trie, mut iter: Chars) {
+fn insert(trie: &mut Trie, mut iter: Chars) {
     if let Some(c) = iter.next() {
         match trie.children.contains_key(&c) {
-            true => _insert(trie.children.get_mut(&c).unwrap(), iter),
+            true => insert(trie.children.get_mut(&c).unwrap(), iter),
             false => {
                 let t = Trie::new();
                 trie.children.insert(c, t);
-                _insert(trie.children.get_mut(&c).unwrap(), iter);
+                insert(trie.children.get_mut(&c).unwrap(), iter);
             }
         }
     } else {
@@ -47,11 +61,11 @@ fn _insert(trie: &mut Trie, mut iter: Chars) {
     }
 }
 
-fn _prefix(trie: &Trie, mut iter: Chars) -> bool {
+fn lookup(trie: &Trie, mut iter: Chars, prefix: bool) -> bool {
     if let Some(c) = iter.next() {
         match trie.children.contains_key(&c) {
-            true => return _prefix(trie.children.get(&c).unwrap(), iter),
-            false => return trie.boundary
+            true => return lookup(trie.children.get(&c).unwrap(), iter, prefix),
+            false => return if prefix {trie.boundary} else {false}
         }
     }
 
