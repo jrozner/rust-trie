@@ -51,8 +51,7 @@ fn insert(trie: &mut Trie, mut iter: Chars) {
         match trie.children.contains_key(&c) {
             true => insert(trie.children.get_mut(&c).unwrap(), iter),
             false => {
-                let t = Trie::new();
-                trie.children.insert(c, t);
+                trie.children.insert(c, Trie::new());
                 insert(trie.children.get_mut(&c).unwrap(), iter);
             }
         }
