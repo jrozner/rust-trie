@@ -3,24 +3,24 @@ use std::str::Chars;
 
 fn main() {
     let trie: &mut Trie = &mut Trie::new();
-    trie.insert(String::from("/usr/share"));
-    trie.insert(String::from("/etc"));
+    trie.insert("/usr/share");
+    trie.insert("/etc");
 
-    println!("{:?}", trie.prefix(String::from("/usr/share/dict/words")));
-    println!("{:?}", trie.prefix(String::from("doc")));
-    println!("{:?}", trie.prefix(String::from("/usr/sha")));
-    println!("{:?}", trie.prefix(String::from("/usr/shat/stuff")));
-    println!("{:?}", trie.prefix(String::from("/etc")));
-    println!("{:?}", trie.prefix(String::from("/etc/")));
+    println!("{:?}", trie.prefix("/usr/share/dict/words"));
+    println!("{:?}", trie.prefix("doc"));
+    println!("{:?}", trie.prefix("/usr/sha"));
+    println!("{:?}", trie.prefix("/usr/shat/stuff"));
+    println!("{:?}", trie.prefix("/etc"));
+    println!("{:?}", trie.prefix("/etc/"));
 
     println!("");
 
-    println!("{:?}", trie.contains(String::from("/usr/share/dict/words")));
-    println!("{:?}", trie.contains(String::from("doc")));
-    println!("{:?}", trie.contains(String::from("/usr/share")));
-    println!("{:?}", trie.contains(String::from("/usr/shat/stuff")));
-    println!("{:?}", trie.contains(String::from("/etc")));
-    println!("{:?}", trie.contains(String::from("/etc/")));
+    println!("{:?}", trie.contains("/usr/share/dict/words"));
+    println!("{:?}", trie.contains("doc"));
+    println!("{:?}", trie.contains("/usr/share"));
+    println!("{:?}", trie.contains("/usr/shat/stuff"));
+    println!("{:?}", trie.contains("/etc"));
+    println!("{:?}", trie.contains("/etc/"));
 }
 
 pub struct Trie {
@@ -33,16 +33,16 @@ impl Trie {
         Trie{children: HashMap::new(), boundary: false}
     }
 
-    fn insert(&mut self, string: String) {
-        insert(self, string.chars())
+    fn insert<S: Into<String>>(&mut self, string: S) {
+        insert(self, string.into().chars())
     }
 
-    fn prefix(&self, string: String) -> bool {
-        lookup(self, string.chars(), true)
+    fn prefix<S: Into<String>>(&self, string: S) -> bool {
+        lookup(self, string.into().chars(), true)
     }
 
-    fn contains(&self, string: String) -> bool {
-        lookup(self, string.chars(), false)
+    fn contains<S: Into<String>>(&self, string: S) -> bool {
+        lookup(self, string.into().chars(), false)
     }
 }
 
