@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use std::collections::hash_map::Keys;
 use std::str::Chars;
 
 fn main() {
@@ -21,6 +22,10 @@ fn main() {
     println!("{:?}", trie.contains("/usr/shat/stuff"));
     println!("{:?}", trie.contains("/etc"));
     println!("{:?}", trie.contains("/etc/"));
+
+    for item in trie.iter() {
+        println!("{}", item);
+    }
 }
 
 pub struct Trie {
@@ -43,6 +48,48 @@ impl Trie {
 
     fn contains<S: Into<String>>(&self, string: S) -> bool {
         lookup(self, string.into().chars(), false)
+    }
+
+    fn iter(&self) -> Iter {
+        Iter{
+            stack: vec![StatePair{trie: self, keys: self.children.keys()}],
+            current_word: Vec::new(),
+        }
+    }
+}
+
+pub struct Iter {
+    stack: Vec<StatePair>,
+    current_word: Vec<char>,
+}
+
+struct StatePair {
+    trie: Trie,
+    keys: Keys,
+}
+
+impl Iterator for Iter {
+    type Item = String;
+
+    fn next(&mut self) -> Option<String> {
+        loop {
+            if let Some(current) = self.stack.last() {
+                if let Some(next_key) = current.keys.next() {
+                    self.current_word.push(next_key);
+                    let next = current.trie.children.get(next_key).unwrap();
+                    self.stack.push(StatePair{trie: next, keys: next.children.keys()});
+                    if current.boundary == true {
+                        return Some(self.current_word.iter().cloned().collect::<String>());
+                    }
+                    continue;
+                } else {
+                    self.stack.pop();
+                    self.current_word.pop();
+                }
+            } else {
+                return None;
+            }
+        }
     }
 }
 
