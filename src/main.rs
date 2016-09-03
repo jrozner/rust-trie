@@ -1,5 +1,4 @@
 use std::collections::HashMap;
-use std::collections::hash_map::Keys;
 use std::str::Chars;
 
 fn main() {
@@ -9,7 +8,6 @@ fn main() {
     trie.insert("/herp/derp");
     trie.insert("/usr/lib");
     trie.insert("/etc/openvpn");
-    println!("Trie: {:?}", trie);
 
     println!("{:?}", trie.prefix("/usr/share/dict/words"));
     println!("{:?}", trie.prefix("doc"));
@@ -27,7 +25,8 @@ fn main() {
     println!("{:?}", trie.contains("/etc"));
     println!("{:?}", trie.contains("/etc/"));
 
-    println!("things:");
+    println!("");
+
     for item in trie.iter() {
         println!("{}", item);
     }

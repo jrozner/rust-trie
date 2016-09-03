@@ -1,6 +1,6 @@
 [package]
 name = "trie"
 version = "0.1.0"
-authors = ["Josh Chase <josh@prevoty.com>"]
+authors = ["Joe Rozner <joe@deadbytes.net>", "Josh Chase <josh@prevoty.com>"]
 
 [dependencies]
